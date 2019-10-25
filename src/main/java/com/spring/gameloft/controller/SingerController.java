@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -44,14 +45,14 @@ public class SingerController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Singer create(@RequestBody Singer singer) {
+    public Singer create(@RequestBody @Valid Singer singer) {
         System.out.println("Creating singer " + singer);
         return singerService.create(singer);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Singer update(@PathVariable("id") Long id, @RequestBody Singer singer)
+    public Singer update(@PathVariable("id") Long id, @RequestBody @Valid Singer singer)
     {
         System.out.println("updating singer " + singer);
         return singerService.update(id, singer);
@@ -65,8 +66,8 @@ public class SingerController {
         singerService.delete(id);
     }
 
-//    @ExceptionHandler(value = RuntimeException.class)
-//    public void notFound(HttpServletResponse response) {
-//        response.setStatus(HttpStatus.BAD_REQUEST.value());
-//    }
+    @ExceptionHandler(value = IllegalArgumentException.class)
+    public void notFound(HttpServletResponse response) {
+        response.setStatus(HttpStatus.BAD_REQUEST.value());
+    }
 }
